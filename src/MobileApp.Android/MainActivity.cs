@@ -125,13 +125,13 @@ public class AndroidApp : App
         .GetExecutingAssembly()
         .GetManifestResourceNames();
 
-    protected override string DeviceId =>
+    public override string DeviceId =>
         global::Android.Provider.Settings.Secure.GetString(
             global::Android.App.Application.Context.ContentResolver,
             global::Android.Provider.Settings.Secure.AndroidId) ?? base.DeviceId;
 
-    protected override string DeviceName => Build.Manufacturer + " " + Build.Model;
-    protected override string DeviceType => $"Android {Build.VERSION.Release} (SDK {Build.VERSION.SdkInt})";
+    public override string DeviceName => Build.Manufacturer + " " + Build.Model;
+    public override string DeviceType => $"Android {Build.VERSION.Release} (SDK {Build.VERSION.SdkInt})";
 
     protected override string ReadResourceFile(string resourceName)
     {

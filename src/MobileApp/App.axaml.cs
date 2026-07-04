@@ -49,9 +49,9 @@ public abstract class App : Application
     protected abstract void RegisterPlatformServices(IServiceCollection services);
     protected abstract void PlatformConfiguration(ConfigurationBuilder builder);
     protected abstract string ReadResourceFile(string resourceName);
-    protected virtual string DeviceId => Environment.MachineName;
-    protected virtual string DeviceName => Environment.MachineName;
-    protected virtual string DeviceType => Environment.OSVersion.ToString();
+    public virtual string DeviceId => Environment.MachineName;
+    public virtual string DeviceName => Environment.MachineName;
+    public virtual string DeviceType => Environment.OSVersion.ToString();
 
     public override void OnFrameworkInitializationCompleted()
     {
