@@ -240,7 +240,7 @@ public partial class DataViewModel : ViewModelBase
     {
         Balances.Clear();
         Loading = true;
-        foreach (var oAuthToken in Tokens.ToList())
+        await Task.WhenAll(Tokens.ToList().Select(async oAuthToken =>
         {
             var response = await _tlClient.Data.GetAccounts(oAuthToken.AccessToken);
             if (!response.IsSuccessful)
@@ -249,16 +249,18 @@ public partial class DataViewModel : ViewModelBase
                 Errors.Add(response.StatusCode == HttpStatusCode.Unauthorized
                     ? $"Error retrieving accounts for {oAuthToken.ProviderId}: {HttpStatusCode.Unauthorized}. Try refreshing the tokens - {response.TraceId}"
                     : $"Error retrieving accounts for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
-                continue;
+                return;
             }
 
             _logger.LogInformation("Accounts retrieved successfully.");
-            foreach (var account in response.Data?.Results ?? [])
+            var accounts = response.Data?.Results ?? [];
+            foreach (var account in accounts)
             {
                 _logger.LogInformation("Account ID: {AccountId}, Type: {AccountType}, Currency: {Currency}", account.AccountId, account.AccountType, account.Currency);
-                await GetAccountBalanceAsync(account.AccountId, account.AccountNumber.Iban, account.Provider.ProviderId, oAuthToken.AccessToken);
             }
-        }
+            await Task.WhenAll(accounts.Select(account =>
+                GetAccountBalanceAsync(account.AccountId, account.AccountNumber.Iban, account.Provider.ProviderId, oAuthToken.AccessToken)));
+        }));
         Loading = false;
     }
 
