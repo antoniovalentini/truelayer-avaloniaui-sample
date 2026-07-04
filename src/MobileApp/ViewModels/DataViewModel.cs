@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -84,17 +85,26 @@ public partial class DataViewModel : ViewModelBase
 
         messenger.Register<DataViewModel, SettingsRestoredMessage>(this, (_, _) =>
         {
-            var tokens = _tokenStorage.LoadTokens();
-            if (tokens is null || tokens.Length == 0)
+            /*
+             * Tokens.Clear() + AddRange() and the fire-and-forget RefreshTokenAsync (which
+             * modifies Balances, an ObservableCollection) can execute on a background thread if
+             * the message sender is off the UI thread. Avalonia raises InvalidOperationException
+             * on cross-thread ObservableCollection mutations.
+             */
+            Dispatcher.UIThread.Post(() =>
             {
-                _logger.LogInformation("Token is null");
-                return;
-            }
+                var tokens = _tokenStorage.LoadTokens();
+                if (tokens is null || tokens.Length == 0)
+                {
+                    _logger.LogInformation("Token is null");
+                    return;
+                }
 
-            Tokens.Clear();
-            Tokens.AddRange(tokens);
+                Tokens.Clear();
+                Tokens.AddRange(tokens);
 
-            _ = RefreshTokenAsync();
+                _ = RefreshTokenCommand.ExecuteAsync(null);
+            });
         });
 
         var tokens = _tokenStorage.LoadTokens();
@@ -106,7 +116,7 @@ public partial class DataViewModel : ViewModelBase
 
         Tokens.AddRange(tokens);
 
-        _ = RefreshTokenAsync();
+        _ = RefreshTokenCommand.ExecuteAsync(null);
     }
 
     private async Task ExchangeCode(string code)
@@ -134,7 +144,7 @@ public partial class DataViewModel : ViewModelBase
 
         await AddTokenAsync(response.Data);
 
-        _ = GetAccountsAsync();
+        _ = GetAccountsCommand.ExecuteAsync(null);
     }
 
     [ObservableProperty] private bool _loading;
@@ -147,36 +157,43 @@ public partial class DataViewModel : ViewModelBase
 
         Balances.Clear();
         Loading = true;
-        var responses = new List<ExchangeCodeResponse>();
-        var invalidTokens = new List<OAuthToken>();
-        // snapshot the list before iterating
-        // so the enumerator is over a private copy and mutations to Tokens mid-await cannot affect it.
-        foreach (var oAuthToken in Tokens.ToList())
+        try
         {
-            var response = await _tlClient.Auth.RefreshToken(oAuthToken.RefreshToken);
-
-            if (!response.IsSuccessful)
+            var responses = new List<ExchangeCodeResponse>();
+            var invalidTokens = new List<OAuthToken>();
+            // snapshot the list before iterating
+            // so the enumerator is over a private copy and mutations to Tokens mid-await cannot affect it.
+            foreach (var oAuthToken in Tokens.ToList())
             {
-                Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
-                _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, Helpers.ExtractErrors(response.Problem?.Errors), response.TraceId);
-                invalidTokens.Add(oAuthToken);
-                continue;
+                var response = await _tlClient.Auth.RefreshToken(oAuthToken.RefreshToken);
+
+                if (!response.IsSuccessful)
+                {
+                    Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
+                    _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, Helpers.ExtractErrors(response.Problem?.Errors), response.TraceId);
+                    invalidTokens.Add(oAuthToken);
+                    continue;
+                }
+                responses.Add(response.Data);
             }
-            responses.Add(response.Data);
-        }
 
-        foreach (var invalidToken in invalidTokens)
-        {
-            _logger.LogInformation("Deleting invalid token for provider: {ProviderId}", invalidToken.ProviderId);
-            Tokens.Remove(invalidToken);
-        }
-        foreach (var exchangeCodeResponse in responses)
-        {
-            await AddTokenAsync(exchangeCodeResponse);
-        }
+            foreach (var invalidToken in invalidTokens)
+            {
+                _logger.LogInformation("Deleting invalid token for provider: {ProviderId}", invalidToken.ProviderId);
+                Tokens.Remove(invalidToken);
+            }
+            foreach (var exchangeCodeResponse in responses)
+            {
+                await AddTokenAsync(exchangeCodeResponse);
+            }
 
-        await GetAccountsAsync();
-        Loading = false;
+            await GetAccountsAsync();
+            Loading = false;
+        }
+        finally
+        {
+            Loading = false;
+        }
     }
 
     private async Task AddTokenAsync(ExchangeCodeResponse response)
@@ -220,7 +237,7 @@ public partial class DataViewModel : ViewModelBase
     {
         Balances.Clear();
         Loading = true;
-        foreach (var oAuthToken in Tokens)
+        foreach (var oAuthToken in Tokens.ToList())
         {
             var response = await _tlClient.Data.GetAccounts(oAuthToken.AccessToken);
             if (!response.IsSuccessful)
@@ -275,7 +292,7 @@ public partial class DataViewModel : ViewModelBase
     private void OnErrorsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         HasErrors = Errors.Count != 0;
-        if (e.OldItems?.Count >= e.NewItems?.Count) return;
+        if (e.Action != NotifyCollectionChangedAction.Add) return;
         _ = ClearErrorAsync(5);
     }
 
