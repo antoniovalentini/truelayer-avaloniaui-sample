@@ -261,14 +261,14 @@ public partial class DataViewModel : ViewModelBase
         Loading = false;
     }
 
-    private static Bitmap DefaultBankLogo => new(AssetLoader.Open(new Uri("avares://MobileApp/Assets/default-bank-logo.jpg")));
-    private static Bitmap Logos(string providerId) => providerId switch
+    private static readonly Bitmap DefaultBankLogo = new(AssetLoader.Open(new Uri("avares://MobileApp/Assets/default-bank-logo.jpg")));
+    private static readonly Dictionary<string, Bitmap> Logos = new()
     {
-        "xs2a-redsys-bbva-it" => new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/xs2a-redsys-bbva-it.png"))),
-        "xs2a-ing-it" => new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/xs2a-ing-it.png"))),
-        "ob-revolut-it" => new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/ob-revolut-it.png"))),
-        _ => DefaultBankLogo,
+        ["xs2a-redsys-bbva-it"] = new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/xs2a-redsys-bbva-it.png"))),
+        ["xs2a-ing-it"] = new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/xs2a-ing-it.png"))),
+        ["ob-revolut-it"] = new Bitmap(AssetLoader.Open(new Uri("avares://MobileApp/Assets/ob-revolut-it.png"))),
     };
+    private static Bitmap GetLogos(string providerId) => Logos.GetValueOrDefault(providerId, DefaultBankLogo);
 
     private async Task GetAccountBalanceAsync(string accountId, string iban, string providerId, string accessToken)
     {
@@ -279,7 +279,7 @@ public partial class DataViewModel : ViewModelBase
             foreach (var balance in response.Data?.Results ?? [])
             {
                 var currency = Helpers.GetCurrencySymbol(balance.Currency);
-                Balances.Add(new ProviderBalance(accountId, iban, $"{currency} {balance.Available}", $"{currency} {balance.Current}", $"{currency} {balance.Overdraft}", Logos(providerId)));
+                Balances.Add(new ProviderBalance(accountId, iban, $"{currency} {balance.Available}", $"{currency} {balance.Current}", $"{currency} {balance.Overdraft}", GetLogos(providerId)));
             }
         }
         else
