@@ -107,6 +107,13 @@ public partial class DataViewModel : ViewModelBase
         _ = RefreshTokenCommand.ExecuteAsync(null);
     }
 
+    private static System.Diagnostics.Activity? StartActivity(string op)
+    {
+        var a = App.Source.StartActivity();
+        a?.SetTag("av.operation", op);
+        return a;
+    }
+
     private OAuthToken[]? LoadStoredTokens()
     {
         var tokens = _tokenStorage.LoadTokens();
@@ -120,8 +127,7 @@ public partial class DataViewModel : ViewModelBase
 
     private async Task ExchangeCode(string code)
     {
-        using var activity = App.Source.StartActivity();
-        activity?.SetTag("av.operation", "exchange-code");
+        using var activity = StartActivity("exchange-code");
 
         if (string.IsNullOrWhiteSpace(code))
         {
@@ -151,8 +157,7 @@ public partial class DataViewModel : ViewModelBase
     [RelayCommand]
     private async Task RefreshTokenAsync()
     {
-        using var activity = App.Source.StartActivity();
-        activity?.SetTag("av.operation", "refresh-token");
+        using var activity = StartActivity("refresh-token");
 
         Balances.Clear();
         Loading = true;
