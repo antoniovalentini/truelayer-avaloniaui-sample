@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls;
@@ -28,6 +29,11 @@ public abstract class App : Application
     public ServiceProvider Services { get; private set; } = null!;
 
     public static readonly ActivitySource Source = new("TrueMobile");
+
+    public string AppVersion => (GetType().Assembly
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+        ?.InformationalVersion ?? "unknown")
+        .Split('+')[0];
 
     public override void Initialize()
     {
