@@ -156,7 +156,8 @@ public class AndroidApp : App
     {
         services
             .AddSingleton<IBrowserService, AndroidBrowserService>()
-            .AddSingleton<IRedirectManager, AndroidRedirectManager>();
+            .AddSingleton<IRedirectManager, AndroidRedirectManager>()
+            .AddSingleton<IShareService, AndroidShareService>();
     }
 
     protected override void PlatformConfiguration(ConfigurationBuilder builder)
