@@ -85,20 +85,11 @@ public partial class DataViewModel : ViewModelBase
 
         messenger.Register<DataViewModel, SettingsRestoredMessage>(this, (_, _) =>
         {
-            /*
-             * Tokens.Clear() + AddRange() and the fire-and-forget RefreshTokenAsync (which
-             * modifies Balances, an ObservableCollection) can execute on a background thread if
-             * the message sender is off the UI thread. Avalonia raises InvalidOperationException
-             * on cross-thread ObservableCollection mutations.
-             */
+            // Post to UI thread: handler may be invoked on the sender's thread.
             Dispatcher.UIThread.Post(() =>
             {
-                var tokens = _tokenStorage.LoadTokens();
-                if (tokens is null || tokens.Length == 0)
-                {
-                    _logger.LogInformation("Token is null");
-                    return;
-                }
+                var tokens = LoadStoredTokens();
+                if (tokens is null) return;
 
                 Tokens.Clear();
                 Tokens.AddRange(tokens);
@@ -109,16 +100,22 @@ public partial class DataViewModel : ViewModelBase
             });
         });
 
+        var tokens = LoadStoredTokens();
+        if (tokens is null) return;
+
+        Tokens.AddRange(tokens);
+        _ = RefreshTokenCommand.ExecuteAsync(null);
+    }
+
+    private OAuthToken[]? LoadStoredTokens()
+    {
         var tokens = _tokenStorage.LoadTokens();
         if (tokens is null || tokens.Length == 0)
         {
-            _logger.LogInformation("Token is null");
-            return;
+            _logger.LogInformation("No stored tokens found.");
+            return null;
         }
-
-        Tokens.AddRange(tokens);
-
-        _ = RefreshTokenCommand.ExecuteAsync(null);
+        return tokens;
     }
 
     private async Task ExchangeCode(string code)
