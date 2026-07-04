@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MobileApp.ViewModels;
 using MobileApp.Views;
+using MobileApp.Debug;
 using TrueLayer.Caching;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
@@ -69,9 +71,25 @@ public abstract class App : Application
 
         var config = configBuilder.Build();
 
+        var debugLogStore = new DebugLogStore();
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var exception = args.ExceptionObject as Exception;
+            debugLogStore.Add(new DebugLogEntry(DateTimeOffset.UtcNow, LogLevel.Critical, "UnhandledException", exception?.Message ?? "Unknown unhandled exception", exception?.ToString()));
+        };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            debugLogStore.Add(new DebugLogEntry(DateTimeOffset.UtcNow, LogLevel.Critical, "UnobservedTaskException", args.Exception.Message, args.Exception.ToString()));
+            args.SetObserved();
+        };
+
         var services = new ServiceCollection();
         services
-            .AddLogging(builder => builder.AddConsole())
+            .AddSingleton<IDebugLogStore>(debugLogStore)
+            .AddLogging(builder => builder
+                .AddConsole()
+                .AddProvider(new InMemoryLoggerProvider(debugLogStore)))
             .AddSingleton<MainViewModel>()
             .AddSingleton<PaymentViewModel>()
             .AddSingleton<DataViewModel>()
