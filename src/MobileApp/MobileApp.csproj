@@ -29,4 +29,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libs\truelayer-dotnet-data\src\TrueLayer\TrueLayer.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MobileApp.Tests" />
+  </ItemGroup>
 </Project>

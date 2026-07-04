@@ -73,3 +73,6 @@ _ReSharper*/
 
 # Superpowers subagent-driven-development scratch ledger
 .superpowers/
+
+# Exception: allow src source directories named "Debug"
+!src/*/Debug/
