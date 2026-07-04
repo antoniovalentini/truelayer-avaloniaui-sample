@@ -102,6 +102,8 @@ public partial class DataViewModel : ViewModelBase
 
                 Tokens.Clear();
                 Tokens.AddRange(tokens);
+                foreach (var token in tokens)
+                    _messenger.Send(new DataProviderAddedMessage(token.ProviderId, token.ProviderId));
 
                 _ = RefreshTokenCommand.ExecuteAsync(null);
             });
