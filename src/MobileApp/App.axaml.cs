@@ -61,10 +61,6 @@ public abstract class App : Application
             return;
         }
 
-#if DEBUG
-        _ = new OtelDiagnosticsListener();
-#endif
-
         var configBuilder = new ConfigurationBuilder();
 
         PlatformConfiguration(configBuilder);
@@ -88,6 +84,8 @@ public abstract class App : Application
         services
             .AddSingleton<IDebugLogStore>(debugLogStore)
             .AddSingleton<IDebugNetworkStore, DebugNetworkStore>()
+            .AddSingleton<IDebugTelemetryStatus, DebugTelemetryStatus>()
+            .AddSingleton<IConfiguration>(config)
             .AddTransient<DebugHttpLoggingHandler>()
             .AddLogging(builder => builder
                 .AddConsole()
@@ -153,6 +151,8 @@ public abstract class App : Application
         RegisterPlatformServices(services);
 
         Services = services.BuildServiceProvider();
+
+        _ = new OtelDiagnosticsListener(Services.GetRequiredService<IDebugTelemetryStatus>());
 
         // no IHost in Avalonia — force OTel initialization
         Services.GetRequiredService<TracerProvider>();
