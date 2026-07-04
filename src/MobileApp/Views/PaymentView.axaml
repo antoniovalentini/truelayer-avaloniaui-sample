@@ -69,9 +69,9 @@
                      Margin="0 16 0 10"/>
 
           <StackPanel Grid.Row="3" Spacing="10">
-            <TextBox Watermark="Beneficiary Name" Text="{Binding NewBeneficiaryName}" FontSize="12"/>
-            <TextBox Watermark="Beneficiary IBAN" Text="{Binding NewBeneficiaryIban}" FontSize="12"/>
-            <TextBox Watermark="Beneficiary Alias" Text="{Binding NewBeneficiaryAlias}" FontSize="12"/>
+            <TextBox PlaceholderText="Beneficiary Name" Text="{Binding NewBeneficiaryName}" FontSize="12"/>
+            <TextBox PlaceholderText="Beneficiary IBAN" Text="{Binding NewBeneficiaryIban}" FontSize="12"/>
+            <TextBox PlaceholderText="Beneficiary Alias" Text="{Binding NewBeneficiaryAlias}" FontSize="12"/>
           </StackPanel>
 
           <!-- Add Beneficiary Button -->
@@ -198,7 +198,7 @@
                      Foreground="#374151"/>
           <Grid ColumnDefinitions="*, Auto">
             <TextBox Text="{Binding BeneficiaryName}"
-                     Watermark="Enter beneficiary name"
+                     PlaceholderText="Enter beneficiary name"
                      HorizontalAlignment="Stretch"
                      VerticalContentAlignment="Center"
                      Height="52"
@@ -228,7 +228,7 @@
                      FontSize="14"
                      Foreground="#374151"/>
           <TextBox Text="{Binding BeneficiaryIban}"
-                   Watermark="GB29 NWBK 6016 1331 9268 19"
+                   PlaceholderText="GB29 NWBK 6016 1331 9268 19"
                    HorizontalAlignment="Stretch"
                    VerticalContentAlignment="Center"
                    Height="52"
@@ -247,7 +247,7 @@
                      FontSize="14"
                      Foreground="#374151"/>
           <TextBox Text="{Binding PaymentReference}"
-                   Watermark="Enter payment reference"
+                   PlaceholderText="Enter payment reference"
                    HorizontalAlignment="Stretch"
                    VerticalContentAlignment="Center"
                    Height="52"

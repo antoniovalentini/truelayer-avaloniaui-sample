@@ -109,7 +109,6 @@ public partial class DataViewModel : ViewModelBase
         _ = RefreshTokenAsync();
     }
 
-    [RelayCommand]
     private async Task ExchangeCode(string code)
     {
         using var activity = App.Source.StartActivity();
