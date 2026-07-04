@@ -27,5 +27,10 @@
       <PathIcon Data="{DynamicResource SettingsRegular}"/>
     </ContentPage.Icon>
   </ContentPage>
+  <ContentPage Header="Debug" Content="{Binding DebugViewModel}">
+    <ContentPage.Icon>
+      <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
+    </ContentPage.Icon>
+  </ContentPage>
 
 </TabbedPage>

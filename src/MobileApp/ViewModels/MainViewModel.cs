@@ -10,12 +10,14 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private PaymentViewModel _paymentViewModel;
     [ObservableProperty] private DataViewModel _dataViewModel;
     [ObservableProperty] private SettingsViewModel _settingsViewModel;
+    [ObservableProperty] private DebugViewModel _debugViewModel;
 
-    public MainViewModel(PaymentViewModel paymentViewModel, DataViewModel dataViewModel, SettingsViewModel settingsViewModel)
+    public MainViewModel(PaymentViewModel paymentViewModel, DataViewModel dataViewModel, SettingsViewModel settingsViewModel, DebugViewModel debugViewModel)
     {
         _paymentViewModel = paymentViewModel;
         _dataViewModel = dataViewModel;
         _settingsViewModel = settingsViewModel;
+        _debugViewModel = debugViewModel;
 
         DataButtonFontWeight = SelectedFontWeight;
         PaymentsButtonFontWeight = DefaultFontWeight;
