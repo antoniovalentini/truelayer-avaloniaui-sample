@@ -1,8 +1,9 @@
-﻿using System;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace MobileApp.Android;
 
-public class AndroidRedirectManager(IBrowserService browser) : IRedirectManager
+public class AndroidRedirectManager(IBrowserService browser, ILogger<AndroidRedirectManager> logger) : IRedirectManager
 {
     public string RedirectUri => "mysecureapp://oauth2redirect";
 
@@ -13,7 +14,6 @@ public class AndroidRedirectManager(IBrowserService browser) : IRedirectManager
 
     public void OnRedirectSuccess(object? sender, CallbackReceivedEventArgs? args)
     {
-        // directly handled by the intent in MainActivity.cs
-        Console.WriteLine("Redirect successful!");
+        logger.LogInformation("Redirect successful");
     }
 }
