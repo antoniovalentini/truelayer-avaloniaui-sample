@@ -119,4 +119,4 @@ public class AuthTokenStorage(ILogger<AuthTokenStorage> logger) : IAuthTokenStor
     private record SettingsBackup(int Version, OAuthToken[] Tokens, List<BeneficiaryModel> Beneficiaries);
 }
 
-public record OAuthToken(string ProviderId, string AccessToken, string TokenType, long ExpiresIn, string RefreshToken);
+public record OAuthToken(string ProviderId, string AccessToken, string TokenType, long ExpiresIn, string RefreshToken, DateTimeOffset IssuedAt = default);

@@ -225,7 +225,8 @@ public partial class DataViewModel : ViewModelBase
             response.AccessToken,
             response.TokenType,
             response.ExpiresIn,
-            response.RefreshToken));
+            response.RefreshToken,
+            DateTimeOffset.UtcNow));
 
         await _tokenStorage.StoreTokens(Tokens.ToArray());
     }
