@@ -18,6 +18,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Create stub config files
+        run: |
+          touch src/MobileApp.Desktop/appsettings.json
+          touch src/MobileApp.Desktop/ec512-private-key.pem
+          touch src/MobileApp.Android/appsettings.json
+          touch src/MobileApp.Android/ec512-private-key.pem
+
       - name: Install Android workload
         run: dotnet workload install android
 
