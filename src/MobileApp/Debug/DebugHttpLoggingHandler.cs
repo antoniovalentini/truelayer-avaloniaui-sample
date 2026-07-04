@@ -24,13 +24,12 @@ public sealed class DebugHttpLoggingHandler(IDebugNetworkStore store) : Delegati
             var response = await base.SendAsync(request, cancellationToken);
             stopwatch.Stop();
 
-            // Buffer the content so both this handler and the real caller (TrueLayer's ApiClient)
-            // can read the body — an unbuffered stream can only be read once.
-            await response.Content.LoadIntoBufferAsync();
-
             string? error = null;
             if (!response.IsSuccessStatusCode)
             {
+                // Buffer the content so both this handler and the real caller (TrueLayer's ApiClient)
+                // can read the body — an unbuffered stream can only be read once.
+                await response.Content.LoadIntoBufferAsync();
                 var body = await response.Content.ReadAsStringAsync(cancellationToken);
                 error = body.Length > MaxErrorSnippetLength ? body[..MaxErrorSnippetLength] : body;
             }
@@ -39,6 +38,10 @@ public sealed class DebugHttpLoggingHandler(IDebugNetworkStore store) : Delegati
 
             store.Add(new DebugNetworkEntry(DateTimeOffset.UtcNow, method, uri, (int)response.StatusCode, stopwatch.ElapsedMilliseconds, traceId, error));
             return response;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using System;
 using MobileApp.Debug;
 using Xunit;
 
@@ -5,6 +6,12 @@ namespace MobileApp.Tests;
 
 public class BoundedBufferTests
 {
+    [Fact]
+    public void Constructor_WithNonPositiveCapacity_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BoundedBuffer<int>(0));
+    }
+
     [Fact]
     public void Add_WithinCapacity_ReturnsAllItemsInOrder()
     {

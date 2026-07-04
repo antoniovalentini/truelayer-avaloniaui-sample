@@ -26,7 +26,9 @@ public sealed class DebugExportService(
         var telemetry = telemetryStatus.Snapshot();
         sb.AppendLine("== Telemetry ==");
         sb.AppendLine($"Last success: {telemetry.LastSuccessAt?.ToString("u") ?? "none"}");
-        sb.AppendLine($"Last failure: {telemetry.LastFailureAt?.ToString("u") ?? "none"} {telemetry.LastFailureMessage}");
+        sb.AppendLine(telemetry.LastFailureAt is { } failedAt
+            ? $"Last failure: {failedAt:u} {telemetry.LastFailureMessage}"
+            : "Last failure: none");
         sb.AppendLine();
 
         sb.AppendLine("== Network (most recent first) ==");

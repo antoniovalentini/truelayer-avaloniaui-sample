@@ -88,6 +88,7 @@ public abstract class App : Application
             .AddSingleton<IConfiguration>(config)
             .AddTransient<DebugHttpLoggingHandler>()
             .AddLogging(builder => builder
+                .SetMinimumLevel(LogLevel.Information)
                 .AddConsole()
                 .AddProvider(new InMemoryLoggerProvider(debugLogStore)))
             .AddSingleton<MainViewModel>()
