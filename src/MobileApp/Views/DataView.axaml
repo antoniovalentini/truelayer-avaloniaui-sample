@@ -56,10 +56,69 @@
         </Button>
       </Grid>
 
-      <ProgressBar IsIndeterminate="True" IsVisible="{Binding Loading}" />
+      <!-- Skeleton loading placeholders -->
+      <StackPanel IsVisible="{Binding Loading}">
+        <StackPanel.Styles>
+          <Style Selector="Border.skeleton-block">
+            <Setter Property="Background" Value="#CBD1DC"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="ClipToBounds" Value="True"/>
+          </Style>
+          <Style Selector="Border.shimmer-highlight">
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="RenderTransform">
+              <TranslateTransform X="-160"/>
+            </Setter>
+            <Setter Property="Background">
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                <GradientStop Color="#00FFFFFF" Offset="0"/>
+                <GradientStop Color="#F2FFFFFF" Offset="0.5"/>
+                <GradientStop Color="#00FFFFFF" Offset="1"/>
+              </LinearGradientBrush>
+            </Setter>
+            <Style.Animations>
+              <Animation Duration="0:0:1.2" IterationCount="INFINITE">
+                <KeyFrame Cue="0%">
+                  <Setter Property="TranslateTransform.X" Value="-160"/>
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                  <Setter Property="TranslateTransform.X" Value="240"/>
+                </KeyFrame>
+              </Animation>
+            </Style.Animations>
+          </Style>
+        </StackPanel.Styles>
+        <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">
+          <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
+            <Border Classes="skeleton-block" Grid.RowSpan="2" Width="64" Height="64" CornerRadius="8">
+              <Border Classes="shimmer-highlight" Height="64"/>
+            </Border>
+            <Border Classes="skeleton-block" Grid.Row="0" Grid.Column="1" Width="120" Height="22" HorizontalAlignment="Right">
+              <Border Classes="shimmer-highlight" Height="22"/>
+            </Border>
+            <Border Classes="skeleton-block" Grid.Row="1" Grid.Column="1" Width="160" Height="16" Margin="0 8 0 0" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+              <Border Classes="shimmer-highlight" Height="16"/>
+            </Border>
+          </Grid>
+        </Border>
+        <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">
+          <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
+            <Border Classes="skeleton-block" Grid.RowSpan="2" Width="64" Height="64" CornerRadius="8">
+              <Border Classes="shimmer-highlight" Height="64"/>
+            </Border>
+            <Border Classes="skeleton-block" Grid.Row="0" Grid.Column="1" Width="120" Height="22" HorizontalAlignment="Right">
+              <Border Classes="shimmer-highlight" Height="22"/>
+            </Border>
+            <Border Classes="skeleton-block" Grid.Row="1" Grid.Column="1" Width="160" Height="16" Margin="0 8 0 0" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+              <Border Classes="shimmer-highlight" Height="16"/>
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
 
       <!-- Balances -->
-      <ItemsControl ItemsSource="{Binding Balances}">
+      <ItemsControl IsVisible="{Binding !Loading}" ItemsSource="{Binding Balances}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1] - 2026-07-04
+
+### Changed
+
+- `GetAccountsAsync` now fetches accounts for all stored tokens, and balances for all accounts of a token, concurrently via `Task.WhenAll` instead of sequentially awaiting each one — cuts load time roughly proportional to account count
+- Replaced the indeterminate `ProgressBar` on the Data page with a skeleton screen (shimmering placeholder cards) while accounts/balances are loading
+
 ## [0.1.0] - 2026-07-04
 
 ### Fixed
