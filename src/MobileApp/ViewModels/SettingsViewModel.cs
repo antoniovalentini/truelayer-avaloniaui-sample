@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,6 +24,11 @@ public partial class SettingsViewModel : ViewModelBase
         if (tokens is null) return;
         Accounts.AddRange(tokens);
     }
+
+    public string Version { get; } = (Assembly.GetEntryAssembly()
+        ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+        ?.InformationalVersion ?? "unknown")
+        .Split('+')[0];
 
     public ObservableCollection<OAuthToken> Accounts { get; } = [];
 

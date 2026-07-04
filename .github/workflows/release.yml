@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Build Desktop
+        run: dotnet build src/MobileApp.Desktop/MobileApp.Desktop.csproj -c Release
+
+      - name: Build Android
+        run: dotnet build src/MobileApp.Android/MobileApp.Android.csproj -c Release

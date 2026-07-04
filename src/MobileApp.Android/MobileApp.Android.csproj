@@ -5,9 +5,7 @@
     <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <ApplicationId>com.AntonioValentini.TrueMobile</ApplicationId>
-    <ApplicationVersion>1</ApplicationVersion>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <AndroidPackageFormat>apk</AndroidPackageFormat>
+<AndroidPackageFormat>apk</AndroidPackageFormat>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <!-- Embed assemblies so `adb install` works standalone (no IDE fast-deployment push needed). -->
 <!--    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>-->

@@ -62,6 +62,12 @@
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
+    <TextBlock Text="{Binding Version, StringFormat='v{0}'}"
+               HorizontalAlignment="Center"
+               Foreground="{DynamicResource PureWhite}"
+               Opacity="0.4"
+               FontSize="12"
+               Margin="0 20 0 0"/>
   </StackPanel>
   </dialogHost:DialogHost>
 </UserControl>
