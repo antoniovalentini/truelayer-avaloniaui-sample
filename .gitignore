@@ -70,3 +70,6 @@ nunit-*.xml
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
+
+# Superpowers subagent-driven-development scratch ledger
+.superpowers/
