@@ -87,6 +87,8 @@ public abstract class App : Application
         var services = new ServiceCollection();
         services
             .AddSingleton<IDebugLogStore>(debugLogStore)
+            .AddSingleton<IDebugNetworkStore, DebugNetworkStore>()
+            .AddTransient<DebugHttpLoggingHandler>()
             .AddLogging(builder => builder
                 .AddConsole()
                 .AddProvider(new InMemoryLoggerProvider(debugLogStore)))
@@ -107,6 +109,7 @@ public abstract class App : Application
                 },
                 authTokenCachingStrategy: AuthTokenCachingStrategies.InMemory);
 
+        services.ConfigureHttpClientDefaults(builder => builder.AddHttpMessageHandler<DebugHttpLoggingHandler>());
 
         services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
