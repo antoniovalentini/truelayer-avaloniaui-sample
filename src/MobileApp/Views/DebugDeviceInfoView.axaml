@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             x:Class="MobileApp.Views.DebugDeviceInfoView"
+             x:DataType="vm:DebugDeviceInfoViewModel"
+             Background="{DynamicResource Charcoal}">
+  <StackPanel Spacing="10">
+    <TextBlock Text="{Binding AppVersion, StringFormat='App version: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+    <TextBlock Text="{Binding DeviceId, StringFormat='Device ID: {0}'}" Foreground="{DynamicResource PureWhite}" TextWrapping="Wrap"/>
+    <TextBlock Text="{Binding DeviceName, StringFormat='Device name: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+    <TextBlock Text="{Binding DeviceType, StringFormat='Device type: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+    <TextBlock Text="{Binding RuntimeVersion, StringFormat='.NET runtime: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+  </StackPanel>
+</UserControl>
