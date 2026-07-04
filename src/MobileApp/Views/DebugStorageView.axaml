@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             x:Class="MobileApp.Views.DebugStorageView"
+             x:DataType="vm:DebugStorageViewModel"
+             Background="{DynamicResource Charcoal}">
+  <ScrollViewer>
+    <StackPanel Spacing="10">
+      <Button Content="Refresh" Command="{Binding RefreshCommand}" HorizontalAlignment="Left"
+              Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <ItemsControl ItemsSource="{Binding Files}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource PureWhite}" CornerRadius="8" Padding="10" Margin="0 0 0 8">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding FileName}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding FullPath}" FontSize="11" TextWrapping="Wrap" Opacity="0.7"/>
+                <TextBlock Text="{Binding SizeBytes, StringFormat='{}{0} bytes'}" FontSize="12"/>
+                <Button Content="View content"
+                        Command="{Binding $parent[ItemsControl].((vm:DebugStorageViewModel)DataContext).PreviewCommand}"
+                        CommandParameter="{Binding}"
+                        Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"
+                        HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBox Text="{Binding PreviewContent}" IsReadOnly="True" AcceptsReturn="True"
+               FontFamily="monospace" FontSize="11" Height="200"
+               IsVisible="{Binding PreviewContent, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
