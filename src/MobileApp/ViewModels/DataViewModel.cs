@@ -192,7 +192,6 @@ public partial class DataViewModel : ViewModelBase
             }
 
             await GetAccountsAsync();
-            Loading = false;
         }
         finally
         {
