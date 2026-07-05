@@ -13,6 +13,9 @@ public class ViewLocator : IDataTemplate
         if (param is null)
             return null;
 
+        // Resolves by CLR namespace + type name, not file path — Views/ViewModels can live in
+        // feature subfolders (e.g. Views/Debug, ViewModels/Debug) while keeping the flat
+        // MobileApp.Views / MobileApp.ViewModels namespace this lookup depends on.
         var name = param.GetType().FullName!
             .Replace("ViewModel", "View", StringComparison.Ordinal)
             .Replace("Design.", string.Empty, StringComparison.Ordinal) // namespace
