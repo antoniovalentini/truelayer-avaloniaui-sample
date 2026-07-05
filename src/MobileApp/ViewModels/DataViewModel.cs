@@ -171,10 +171,23 @@ public partial class DataViewModel : ViewModelBase
             {
                 var response = await _tlClient.Auth.RefreshToken(oAuthToken.RefreshToken);
 
+                if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    var errors = response.Problem?.Errors is null
+                        ? response.Problem?.Detail
+                        : Helpers.ExtractErrors(response.Problem.Errors);
+                    Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {errors} - {response.TraceId}");
+                    _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, errors, response.TraceId);
+                    continue;
+                }
+
                 if (!response.IsSuccessful)
                 {
-                    Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
-                    _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, Helpers.ExtractErrors(response.Problem?.Errors), response.TraceId);
+                    var errors = response.Problem?.Errors is null
+                        ? response.Problem?.Detail
+                        : Helpers.ExtractErrors(response.Problem.Errors);
+                    Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {errors} - {response.TraceId}");
+                    _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, errors, response.TraceId);
                     invalidTokens.Add(oAuthToken);
                     continue;
                 }

@@ -120,7 +120,7 @@ The app uses [TrueLayer's .NET SDK](https://github.com/TrueLayer/truelayer-dotne
 - **Payments**: Create SEPA payments and monitor their status
 - **Payment Updates**: Request status updates for payment processing
 
-**Note**: Accounts and Balances functionality uses a fork of the official TrueLayer .NET SDK (included as a submodule) until these features are available in the official SDK.
+**Note**: Accounts and Balances functionality uses [a fork of the official TrueLayer .NET SDK](https://github.com/antoniovalentini/truelayer-dotnet-data) (included as a submodule) until these features are available in the official SDK.
 
 The app also has an in-app **Debug** tab for live troubleshooting on a device — log viewer, network inspector, token/storage inspectors, device info, and a share/export diagnostics action. See [`docs/DebugView.md`](docs/DebugView.md).
 
