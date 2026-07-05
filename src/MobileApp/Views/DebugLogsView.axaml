@@ -13,6 +13,7 @@
       </Grid>
       <ComboBox ItemsSource="{Binding AvailableLevels}" SelectedItem="{Binding LevelFilter}"
                 PlaceholderText="All levels" HorizontalAlignment="Stretch"/>
+      <CheckBox Content="Auth / deep-links only" IsChecked="{Binding AuthOnly}" Foreground="{DynamicResource PureWhite}"/>
       <ItemsControl ItemsSource="{Binding Entries}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>

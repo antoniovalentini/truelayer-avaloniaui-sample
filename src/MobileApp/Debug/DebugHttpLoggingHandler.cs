@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MobileApp.Debug;
 
-public sealed class DebugHttpLoggingHandler(IDebugNetworkStore store) : DelegatingHandler
+public sealed class DebugHttpLoggingHandler(IDebugStore<DebugNetworkEntry> store) : DelegatingHandler
 {
     // Mirrors the internal TrueLayer.CustomHeaders.TraceId constant (not accessible from this assembly).
     private const string TraceIdHeader = "Tl-Trace-Id";

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MobileApp.Debug;
 
-public sealed class InMemoryLoggerProvider(IDebugLogStore store) : ILoggerProvider
+public sealed class InMemoryLoggerProvider(IDebugStore<DebugLogEntry> store) : ILoggerProvider
 {
     private readonly ConcurrentDictionary<string, InMemoryLogger> _loggers = new();
 
@@ -13,7 +13,7 @@ public sealed class InMemoryLoggerProvider(IDebugLogStore store) : ILoggerProvid
 
     public void Dispose() => _loggers.Clear();
 
-    private sealed class InMemoryLogger(string category, IDebugLogStore store) : ILogger
+    private sealed class InMemoryLogger(string category, IDebugStore<DebugLogEntry> store) : ILogger
     {
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 

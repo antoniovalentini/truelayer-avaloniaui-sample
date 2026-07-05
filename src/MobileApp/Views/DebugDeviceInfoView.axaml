@@ -10,5 +10,12 @@
     <TextBlock Text="{Binding DeviceName, StringFormat='Device name: {0}'}" Foreground="{DynamicResource PureWhite}"/>
     <TextBlock Text="{Binding DeviceType, StringFormat='Device type: {0}'}" Foreground="{DynamicResource PureWhite}"/>
     <TextBlock Text="{Binding RuntimeVersion, StringFormat='.NET runtime: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+
+    <TextBlock Text="Telemetry" FontWeight="SemiBold" Foreground="{DynamicResource PureWhite}" Margin="0 10 0 0"/>
+    <Button Content="Refresh" Command="{Binding RefreshTelemetryCommand}" HorizontalAlignment="Left"
+            Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+    <TextBlock Text="{Binding HoneycombEndpoint, StringFormat='Endpoint: {0}'}" Foreground="{DynamicResource PureWhite}" TextWrapping="Wrap"/>
+    <TextBlock Text="{Binding LastSuccessDisplay, StringFormat='Last success: {0}'}" Foreground="{DynamicResource PureWhite}"/>
+    <TextBlock Text="{Binding LastFailureDisplay, StringFormat='Last failure: {0}'}" Foreground="{DynamicResource PureWhite}" TextWrapping="Wrap"/>
   </StackPanel>
 </UserControl>

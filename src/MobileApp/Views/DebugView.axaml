@@ -13,11 +13,9 @@
     <StackPanel Grid.Row="1" Spacing="10" IsVisible="{Binding CurrentSubViewModel, Converter={x:Static ObjectConverters.IsNull}}">
       <TextBlock Text="Debug" FontSize="18" FontWeight="DemiBold" Foreground="{DynamicResource PureWhite}"/>
       <Button Content="Logs" Command="{Binding OpenLogsCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
-      <Button Content="Auth / Deep-links" Command="{Binding OpenAuthLogsCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
       <Button Content="Network" Command="{Binding OpenNetworkCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
       <Button Content="Tokens" Command="{Binding OpenTokensCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
       <Button Content="Device Info" Command="{Binding OpenDeviceInfoCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
-      <Button Content="Telemetry" Command="{Binding OpenTelemetryCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
       <Button Content="Storage" Command="{Binding OpenStorageCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
       <Button x:Name="ShareButton" Content="Share diagnostics" HorizontalAlignment="Stretch"
               Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}" Margin="0 20 0 0"/>

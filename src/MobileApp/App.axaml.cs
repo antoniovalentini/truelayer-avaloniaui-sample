@@ -67,7 +67,7 @@ public abstract class App : Application
 
         var config = configBuilder.Build();
 
-        var debugLogStore = new DebugLogStore();
+        var debugLogStore = new DebugStore<DebugLogEntry>(500);
 
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
@@ -82,8 +82,8 @@ public abstract class App : Application
 
         var services = new ServiceCollection();
         services
-            .AddSingleton<IDebugLogStore>(debugLogStore)
-            .AddSingleton<IDebugNetworkStore, DebugNetworkStore>()
+            .AddSingleton<IDebugStore<DebugLogEntry>>(debugLogStore)
+            .AddSingleton<IDebugStore<DebugNetworkEntry>>(new DebugStore<DebugNetworkEntry>(100))
             .AddSingleton<IDebugTelemetryStatus, DebugTelemetryStatus>()
             .AddSingleton<IConfiguration>(config)
             .AddTransient<DebugHttpLoggingHandler>()
@@ -96,11 +96,9 @@ public abstract class App : Application
             .AddSingleton<DataViewModel>()
             .AddSingleton<SettingsViewModel>()
             .AddSingleton<DebugLogsViewModel>()
-            .AddSingleton<DebugAuthLogsViewModel>()
             .AddSingleton<DebugNetworkViewModel>()
             .AddSingleton<DebugTokensViewModel>()
             .AddSingleton<DebugDeviceInfoViewModel>()
-            .AddSingleton<DebugTelemetryViewModel>()
             .AddSingleton<DebugStorageViewModel>()
             .AddSingleton<DebugViewModel>()
             .AddSingleton<IDebugExportService, DebugExportService>()

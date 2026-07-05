@@ -7,9 +7,9 @@ namespace MobileApp.ViewModels;
 
 public partial class DebugNetworkViewModel : ViewModelBase
 {
-    private readonly IDebugNetworkStore _store;
+    private readonly IDebugStore<DebugNetworkEntry> _store;
 
-    public DebugNetworkViewModel(IDebugNetworkStore store)
+    public DebugNetworkViewModel(IDebugStore<DebugNetworkEntry> store)
     {
         _store = store;
         Refresh();

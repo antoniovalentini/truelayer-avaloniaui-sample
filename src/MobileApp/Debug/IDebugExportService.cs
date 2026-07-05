@@ -10,8 +10,8 @@ public interface IDebugExportService
 }
 
 public sealed class DebugExportService(
-    IDebugLogStore logStore,
-    IDebugNetworkStore networkStore,
+    IDebugStore<DebugLogEntry> logStore,
+    IDebugStore<DebugNetworkEntry> networkStore,
     IDebugTelemetryStatus telemetryStatus) : IDebugExportService
 {
     public string BuildDiagnosticsBundle()
