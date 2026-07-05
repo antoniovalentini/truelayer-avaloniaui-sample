@@ -12,6 +12,7 @@
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://MobileApp/Assets/Icons.axaml" />
+    <StyleInclude Source="avares://MobileApp/Assets/Styles.axaml" />
     <dialogHostAvalonia:DialogHostStyles />
   </Application.Styles>
 

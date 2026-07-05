@@ -52,7 +52,7 @@ public class FakeAuthApi : IAuthApi
 
     public async ValueTask<ApiResponse<ExchangeCodeResponse>> RefreshToken(string refreshToken, CancellationToken cancellationToken = new())
     {
-        await Task.Delay(2000, cancellationToken);
+        await Task.Delay(500, cancellationToken);
         return new ApiResponse<ExchangeCodeResponse>(_fakeExchangeCodeResponse, HttpStatusCode.OK, "fake-trace-id");
     }
 }

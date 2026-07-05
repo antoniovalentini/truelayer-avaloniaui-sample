@@ -29,7 +29,7 @@
   </ContentPage>
   <ContentPage Header="Debug" Content="{Binding DebugViewModel}">
     <ContentPage.Icon>
-      <PathIcon Data="{DynamicResource LineHorizontal3Regular}"/>
+      <PathIcon Data="{DynamicResource BugRegular}"/>
     </ContentPage.Icon>
   </ContentPage>
 

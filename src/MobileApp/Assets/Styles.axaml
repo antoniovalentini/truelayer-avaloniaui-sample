@@ -1,0 +1,22 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- "accent-hover" can go on a Button itself, or on an ancestor to opt every descendant
+       Button in at once (e.g. a whole view's root) — same style, two ways to scope it. -->
+  <Style Selector="Button.accent-hover:pointerover /template/ ContentPresenter,
+                   Button.accent-hover:pressed /template/ ContentPresenter,
+                   .accent-hover Button:pointerover /template/ ContentPresenter,
+                   .accent-hover Button:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="#7392f9"/>
+  </Style>
+
+  <!-- Same "accent-hover" class, applied to CheckBox text color instead of Button background. -->
+  <Style Selector="CheckBox.accent-hover:pointerover /template/ ContentPresenter,
+                   .accent-hover CheckBox:pointerover /template/ ContentPresenter">
+    <Setter Property="Foreground" Value="#7392f9"/>
+  </Style>
+
+  <!-- Disabled buttons fall back to the theme's dark gray background; keep text legible against it. -->
+  <Style Selector="Button:disabled /template/ ContentPresenter">
+    <Setter Property="Foreground" Value="{DynamicResource PureWhite}"/>
+  </Style>
+</Styles>

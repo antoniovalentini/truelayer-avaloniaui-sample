@@ -9,4 +9,8 @@
   <SolidColorBrush x:Key="LavenderBrush" Color="{StaticResource Lavender}" />
   <SolidColorBrush x:Key="CharcoalBrush" Color="{StaticResource Charcoal}" />
   <SolidColorBrush x:Key="PureWhiteBrush" Color="{StaticResource PureWhite}" />
+
+  <!-- FluentTheme's default CheckBox border assumes a light background; it's invisible on Charcoal panels. -->
+  <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUnchecked" Color="{StaticResource PureWhite}" />
+  <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" Color="{StaticResource PureWhite}" />
 </ResourceDictionary>
