@@ -28,6 +28,9 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
+      - name: Run tests
+        run: dotnet test src/MobileApp.Tests/MobileApp.Tests.csproj -c Release
+
       - name: Build Desktop
         run: dotnet build src/MobileApp.Desktop/MobileApp.Desktop.csproj -c Release
 

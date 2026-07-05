@@ -70,3 +70,9 @@ nunit-*.xml
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
+
+# Superpowers subagent-driven-development scratch ledger
+.superpowers/
+
+# Exception: allow src source directories named "Debug"
+!src/*/Debug/

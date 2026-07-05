@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             x:Class="MobileApp.Views.DebugView"
+             x:DataType="vm:DebugViewModel"
+             Background="{DynamicResource Charcoal}">
+  <Grid RowDefinitions="Auto,*" Margin="20 10 20 20">
+    <Button Grid.Row="0" Content="&lt; Back" Command="{Binding GoBackCommand}"
+            HorizontalAlignment="Left" Margin="0 0 0 10"
+            Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"
+            IsVisible="{Binding CurrentSubViewModel, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+
+    <StackPanel Grid.Row="1" Spacing="10" IsVisible="{Binding CurrentSubViewModel, Converter={x:Static ObjectConverters.IsNull}}">
+      <TextBlock Text="Debug" FontSize="18" FontWeight="DemiBold" Foreground="{DynamicResource PureWhite}"/>
+      <Button Content="Logs" Command="{Binding OpenLogsCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <Button Content="Network" Command="{Binding OpenNetworkCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <Button Content="Tokens" Command="{Binding OpenTokensCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <Button Content="Device Info" Command="{Binding OpenDeviceInfoCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <Button Content="Storage" Command="{Binding OpenStorageCommand}" HorizontalAlignment="Stretch" Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <Button x:Name="ShareButton" Content="Share diagnostics" HorizontalAlignment="Stretch"
+              Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}" Margin="0 20 0 0"/>
+    </StackPanel>
+
+    <TransitioningContentControl Grid.Row="1" Content="{Binding CurrentSubViewModel}"
+                                  IsVisible="{Binding CurrentSubViewModel, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+  </Grid>
+</UserControl>

@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             x:Class="MobileApp.Views.DebugNetworkView"
+             x:DataType="vm:DebugNetworkViewModel"
+             Background="{DynamicResource Charcoal}">
+  <ScrollViewer>
+    <StackPanel Spacing="10">
+      <Button Content="Refresh" Command="{Binding RefreshCommand}" HorizontalAlignment="Left"
+              Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      <ItemsControl ItemsSource="{Binding Entries}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource PureWhite}" CornerRadius="8" Padding="10" Margin="0 0 0 8">
+              <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" FontSize="12">
+                  <Run Text="{Binding Method}"/>
+                  <Run Text=" "/>
+                  <Run Text="{Binding Uri}"/>
+                </TextBlock>
+                <TextBlock FontSize="12">
+                  <Run Text="Status: "/>
+                  <Run Text="{Binding StatusCode}"/>
+                  <Run Text=" — "/>
+                  <Run Text="{Binding DurationMs}"/>
+                  <Run Text="ms"/>
+                </TextBlock>
+                <TextBlock Text="{Binding Error}" FontSize="11" Foreground="#DC2626" TextWrapping="Wrap"
+                           IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

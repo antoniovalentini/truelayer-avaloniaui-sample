@@ -15,3 +15,9 @@ indent_size = 2
 
 # dotnet specific
 dotnet_sort_system_directives_first = true
+
+# Debug views/view models live under a Debug/ subfolder but keep the flat
+# MobileApp.Views / MobileApp.ViewModels namespace on purpose — ViewLocator.cs
+# resolves views by namespace, not folder. Don't "fix" the namespace mismatch.
+[src/MobileApp/{Views,ViewModels}/Debug/*.cs]
+dotnet_diagnostic.IDE0130.severity = none

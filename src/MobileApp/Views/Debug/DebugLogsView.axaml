@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             x:Class="MobileApp.Views.DebugLogsView"
+             x:DataType="vm:DebugLogsViewModel"
+             Background="{DynamicResource Charcoal}">
+  <ScrollViewer>
+    <StackPanel Spacing="10">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox Grid.Column="0" Text="{Binding SearchText}" PlaceholderText="Search message..."/>
+        <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}" Margin="10 0 0 0"
+                Background="{DynamicResource Lavender}" Foreground="{DynamicResource Charcoal}"/>
+      </Grid>
+      <ComboBox ItemsSource="{Binding AvailableLevels}" SelectedItem="{Binding LevelFilter}"
+                PlaceholderText="All levels" HorizontalAlignment="Stretch"/>
+      <CheckBox Content="Auth / deep-links only" IsChecked="{Binding AuthOnly}" Foreground="{DynamicResource PureWhite}"/>
+      <ItemsControl ItemsSource="{Binding Entries}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource PureWhite}" CornerRadius="8" Padding="10" Margin="0 0 0 8">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding Category}" FontWeight="SemiBold" FontSize="12"/>
+                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="13"/>
+                <TextBlock FontSize="11" Opacity="0.6">
+                  <Run Text="{Binding Timestamp, StringFormat={}{0:HH:mm:ss}}"/>
+                  <Run Text=" — "/>
+                  <Run Text="{Binding Level}"/>
+                </TextBlock>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

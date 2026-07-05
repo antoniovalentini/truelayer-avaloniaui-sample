@@ -12,6 +12,7 @@ using Avalonia.Android;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MobileApp.Models;
 using AndroidContent = Android.Content;
 
@@ -67,25 +68,25 @@ public class MainActivity : AvaloniaMainActivity
 
     private void HandleIntent(AndroidContent.Intent? intent)
     {
-        // TODO: Find a way to use Logger<T> here
-        Console.WriteLine("Handle Deep Link Intent");
+        var logger = App.Instance.Services.GetRequiredService<ILogger<MainActivity>>();
+        logger.LogInformation("Handle Deep Link Intent");
         if (intent is null)
         {
-            Console.WriteLine("Received null intent in OnNewIntent");
+            logger.LogWarning("Received null intent in OnNewIntent");
             return;
         }
 
         var uri = intent.DataString;
         if (string.IsNullOrEmpty(uri))
         {
-            Console.WriteLine("Received null or empty URI in OnNewIntent");
+            logger.LogWarning("Received null or empty URI in OnNewIntent");
             return;
         }
 
         var parsed = global::Android.Net.Uri.Parse(uri);
         if (parsed?.Host != "oauth2redirect")
         {
-            Console.WriteLine($"Received unexpected host in OnNewIntent: {parsed?.Host}");
+            logger.LogWarning("Received unexpected host in OnNewIntent: {Host}", parsed?.Host);
             return;
         }
 
@@ -98,7 +99,7 @@ public class MainActivity : AvaloniaMainActivity
                 queryParams[param] = value;
             }
 
-        Console.WriteLine("Sending success message");
+        logger.LogInformation("Received redirect callback with {ParamCount} query parameters", queryParams.Count);
         var messenger = App.Instance.Services.GetRequiredService<IMessenger>();
         messenger.Send(new CallbackReceivedMessage(new CallbackReceivedEventArgs(queryParams)));
     }
@@ -124,13 +125,13 @@ public class AndroidApp : App
         .GetExecutingAssembly()
         .GetManifestResourceNames();
 
-    protected override string DeviceId =>
+    public override string DeviceId =>
         global::Android.Provider.Settings.Secure.GetString(
             global::Android.App.Application.Context.ContentResolver,
             global::Android.Provider.Settings.Secure.AndroidId) ?? base.DeviceId;
 
-    protected override string DeviceName => Build.Manufacturer + " " + Build.Model;
-    protected override string DeviceType => $"Android {Build.VERSION.Release} (SDK {Build.VERSION.SdkInt})";
+    public override string DeviceName => Build.Manufacturer + " " + Build.Model;
+    public override string DeviceType => $"Android {Build.VERSION.Release} (SDK {Build.VERSION.SdkInt})";
 
     protected override string ReadResourceFile(string resourceName)
     {
@@ -155,7 +156,8 @@ public class AndroidApp : App
     {
         services
             .AddSingleton<IBrowserService, AndroidBrowserService>()
-            .AddSingleton<IRedirectManager, AndroidRedirectManager>();
+            .AddSingleton<IRedirectManager, AndroidRedirectManager>()
+            .AddSingleton<IShareService, AndroidShareService>();
     }
 
     protected override void PlatformConfiguration(ConfigurationBuilder builder)

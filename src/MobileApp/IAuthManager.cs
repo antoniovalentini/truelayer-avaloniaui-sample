@@ -76,6 +76,7 @@ public class AuthManager : IDisposable, IAuthManager
             queryParams[s] = value;
         }
 
+        _logger.LogInformation("Received auth callback with {ParamCount} query parameters", queryParams.Count);
         CallbackReceived?.Invoke(this, new CallbackReceivedEventArgs(queryParams));
     }
 

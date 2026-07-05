@@ -33,5 +33,8 @@
     <PackageVersion Include="Microsoft.Extensions.Http" Version="$(MSExtensionsVersion)" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="TrueLayer.Signing" Version="0.2.5" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
 </Project>

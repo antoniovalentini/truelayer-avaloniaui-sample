@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,4 +20,5 @@ public class FakeAuthTokenStorage : IAuthTokenStorage
     public Task Store<T>(string fileName, T blob) => Task.CompletedTask;
     public Task ExportSettings(Stream outputStream) => Task.CompletedTask;
     public Task ImportSettings(Stream inputStream) => Task.CompletedTask;
+    public IReadOnlyList<StorageFileSnapshot> InspectManagedFiles() => [];
 }

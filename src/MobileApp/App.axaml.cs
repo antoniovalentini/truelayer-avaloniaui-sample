@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MobileApp.ViewModels;
 using MobileApp.Views;
+using MobileApp.Debug;
 using TrueLayer.Caching;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
@@ -47,9 +49,9 @@ public abstract class App : Application
     protected abstract void RegisterPlatformServices(IServiceCollection services);
     protected abstract void PlatformConfiguration(ConfigurationBuilder builder);
     protected abstract string ReadResourceFile(string resourceName);
-    protected virtual string DeviceId => Environment.MachineName;
-    protected virtual string DeviceName => Environment.MachineName;
-    protected virtual string DeviceType => Environment.OSVersion.ToString();
+    public virtual string DeviceId => Environment.MachineName;
+    public virtual string DeviceName => Environment.MachineName;
+    public virtual string DeviceType => Environment.OSVersion.ToString();
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -59,23 +61,47 @@ public abstract class App : Application
             return;
         }
 
-#if DEBUG
-        _ = new OtelDiagnosticsListener();
-#endif
-
         var configBuilder = new ConfigurationBuilder();
 
         PlatformConfiguration(configBuilder);
 
         var config = configBuilder.Build();
 
+        var debugLogStore = new DebugStore<DebugLogEntry>(500);
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var exception = args.ExceptionObject as Exception;
+            debugLogStore.Add(new DebugLogEntry(DateTimeOffset.UtcNow, LogLevel.Critical, "UnhandledException", exception?.Message ?? "Unknown unhandled exception", exception?.ToString()));
+        };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            debugLogStore.Add(new DebugLogEntry(DateTimeOffset.UtcNow, LogLevel.Critical, "UnobservedTaskException", args.Exception.Message, args.Exception.ToString()));
+            args.SetObserved();
+        };
+
         var services = new ServiceCollection();
         services
-            .AddLogging(builder => builder.AddConsole())
+            .AddSingleton<IDebugStore<DebugLogEntry>>(debugLogStore)
+            .AddSingleton<IDebugStore<DebugNetworkEntry>>(new DebugStore<DebugNetworkEntry>(100))
+            .AddSingleton<IDebugTelemetryStatus, DebugTelemetryStatus>()
+            .AddSingleton<IConfiguration>(config)
+            .AddTransient<DebugHttpLoggingHandler>()
+            .AddLogging(builder => builder
+                .SetMinimumLevel(LogLevel.Information)
+                .AddConsole()
+                .AddProvider(new InMemoryLoggerProvider(debugLogStore)))
             .AddSingleton<MainViewModel>()
             .AddSingleton<PaymentViewModel>()
             .AddSingleton<DataViewModel>()
             .AddSingleton<SettingsViewModel>()
+            .AddSingleton<DebugLogsViewModel>()
+            .AddSingleton<DebugNetworkViewModel>()
+            .AddSingleton<DebugTokensViewModel>()
+            .AddSingleton<DebugDeviceInfoViewModel>()
+            .AddSingleton<DebugStorageViewModel>()
+            .AddSingleton<DebugViewModel>()
+            .AddSingleton<IDebugExportService, DebugExportService>()
             .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
             .AddSingleton<IAuthTokenStorage, AuthTokenStorage>()
             .AddSingleton<IAuthManager, AuthManager>()
@@ -89,6 +115,7 @@ public abstract class App : Application
                 },
                 authTokenCachingStrategy: AuthTokenCachingStrategies.InMemory);
 
+        services.ConfigureHttpClientDefaults(builder => builder.AddHttpMessageHandler<DebugHttpLoggingHandler>());
 
         services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
@@ -132,6 +159,8 @@ public abstract class App : Application
         RegisterPlatformServices(services);
 
         Services = services.BuildServiceProvider();
+
+        _ = new OtelDiagnosticsListener(Services.GetRequiredService<IDebugTelemetryStatus>());
 
         // no IHost in Avalonia — force OTel initialization
         Services.GetRequiredService<TracerProvider>();

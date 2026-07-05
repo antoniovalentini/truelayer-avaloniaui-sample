@@ -16,6 +16,7 @@ public interface IAuthTokenStorage
     Task Store<T>(string fileName, T blob);
     Task ExportSettings(Stream outputStream);
     Task ImportSettings(Stream inputStream);
+    IReadOnlyList<StorageFileSnapshot> InspectManagedFiles();
 }
 
 public class AuthTokenStorage(ILogger<AuthTokenStorage> logger) : IAuthTokenStorage
@@ -116,7 +117,26 @@ public class AuthTokenStorage(ILogger<AuthTokenStorage> logger) : IAuthTokenStor
         await Store("beneficiaries.json", backup.Beneficiaries);
     }
 
+    public IReadOnlyList<StorageFileSnapshot> InspectManagedFiles()
+    {
+        return
+        [
+            Inspect("settings.json", Path.Combine(SecretsFolderPath, "settings.json")),
+            Inspect("beneficiaries.json", Path.Combine(BasePath, "beneficiaries.json")),
+        ];
+
+        static StorageFileSnapshot Inspect(string fileName, string fullPath)
+        {
+            var info = new FileInfo(fullPath);
+            return info.Exists
+                ? new StorageFileSnapshot(fileName, fullPath, true, info.Length, info.LastWriteTimeUtc)
+                : new StorageFileSnapshot(fileName, fullPath, false, 0, null);
+        }
+    }
+
     private record SettingsBackup(int Version, OAuthToken[] Tokens, List<BeneficiaryModel> Beneficiaries);
 }
 
-public record OAuthToken(string ProviderId, string AccessToken, string TokenType, long ExpiresIn, string RefreshToken);
+public record OAuthToken(string ProviderId, string AccessToken, string TokenType, long ExpiresIn, string RefreshToken, DateTimeOffset IssuedAt = default);
+
+public sealed record StorageFileSnapshot(string FileName, string FullPath, bool Exists, long SizeBytes, DateTimeOffset? LastModifiedUtc);
