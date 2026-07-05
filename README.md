@@ -16,11 +16,11 @@ For newly created accounts, TrueLayer usually provides access to a mock bank acc
 
 Before you begin, ensure you have the following installed:
 
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
 - [JetBrains Rider](https://www.jetbrains.com/rider/) or [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) (recommended IDEs)
 - For Android development:
-  - [Android SDK](https://developer.android.com/studio) (API level 21 or higher)
-  - [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/downloads/) 8 or higher
+  - [Android SDK](https://developer.android.com/studio) (API level 23 or higher)
+  - The `android` workload (`dotnet workload install android`) — this also provisions the JDK it needs, no separate JDK install required
 - Git (for cloning and submodule management)
 
 ## Setup Guide
@@ -28,8 +28,8 @@ Before you begin, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/antoniovalentini/truelayer-samples.git
-cd truelayer-samples
+git clone https://github.com/antoniovalentini/truelayer-avaloniaui-sample.git
+cd truelayer-avaloniaui-sample
 git submodule update --init --recursive
 ```
 
@@ -105,10 +105,10 @@ cd src/MobileApp.Android
 dotnet restore
 
 # Build for Android
-dotnet build -f net9.0-android -p:AndroidSdkDirectory="<path-to-android-sdk>"
+dotnet build -f net10.0-android -p:AndroidSdkDirectory="<path-to-android-sdk>"
 
 # Deploy to connected device/emulator
-dotnet build -f net9.0-android -p:AndroidSdkDirectory="<path-to-android-sdk>" -t:Run
+dotnet build -f net10.0-android -p:AndroidSdkDirectory="<path-to-android-sdk>" -t:Run
 ```
 
 ## Main Features
@@ -122,15 +122,17 @@ The app uses [TrueLayer's .NET SDK](https://github.com/TrueLayer/truelayer-dotne
 
 **Note**: Accounts and Balances functionality uses [a fork of the official TrueLayer .NET SDK](https://github.com/antoniovalentini/truelayer-dotnet-data) (included as a submodule) until these features are available in the official SDK.
 
+The app also has a **Settings** tab for backing up/restoring accounts and beneficiaries as a JSON file, and removing individual accounts.
+
 The app also has an in-app **Debug** tab for live troubleshooting on a device — log viewer, network inspector, token/storage inspectors, device info, and a share/export diagnostics action. See [`docs/DebugView.md`](docs/DebugView.md).
 
 ## Implementation Details
 
 The app uses Avalonia UI to provide a cross-platform user interface with the following features:
-- **Navigation**: The app provides a simple navigation system to switch between different views (Accounts, Payments, Settings) using a bottom navigation bar that assigns a specific viewmodel to a `TransitioningContentControl`. The `ViewLocator` will then resolve the view for the viewmodel.
+- **Navigation**: The app provides a simple navigation system to switch between different views (Accounts, Payments, Settings, Debug) using a bottom navigation bar that assigns a specific viewmodel to a `TransitioningContentControl`. The `ViewLocator` will then resolve the view for the viewmodel.
 - **Data Binding**: data binding is used to connect the UI with the underlying data models, updating the UI through property changes events.
 - **Dependency Injection**: The app uses dependency injection to manage dependencies and view models.
-- **Logging**: The app uses the standard Microsoft's `ILogger` interface to log messages directly to the console.
+- **Logging**: The app uses the standard Microsoft's `ILogger` interface, logging to the console and to an in-memory buffer surfaced in the Debug tab.
 - **Storage**: Data is stored in plain text files in the user's local storage directory.
 - **HTTP callbacks**: The app has platform-specific implementations for handling HTTP callbacks: an HTTP server for Desktop and Deep Links for Android.
 

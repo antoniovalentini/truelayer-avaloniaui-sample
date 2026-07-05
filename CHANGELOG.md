@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.1.3] - 2026-07-05
+
+### Added
+
+- Reusable `accent-hover` style (`Assets/Styles.axaml`) for button/checkbox hover and press feedback — can be applied to an individual control or to an ancestor to cascade to every descendant; used across the Settings, Data, and Debug views
+- Dedicated bug icon for the Debug tab instead of the generic tab icon
+
+### Changed
+
+- Disabled buttons now keep legible (light) text against the theme's dark disabled background instead of low-contrast gray-on-gray
+- Checkbox borders are now visible against dark panels, both at rest and on hover, instead of blending into the background
+- Reduced the fake token-refresh delay used by design-time/dev fakes from 2s to 500ms for snappier iteration
+
+### Fixed
+
+- `IAuthTokenStorage` now creates an empty beneficiaries JSON file if it's missing instead of failing
+- Token refresh error handling now falls back to `Problem.Detail` when `Problem.Errors` is empty, instead of calling `ExtractErrors` on a null dictionary
+- `ApiClient` (TrueLayer SDK fork, submodule) now correctly parses OAuth-style error responses (`error`/`error_description`/`error_details`, e.g. rate limiting) into `ProblemDetails`, instead of constructing an invalid empty record
+- README corrected to match the current codebase: .NET 10 SDK requirement, correct repository clone URL, Android target framework/API level, JDK provisioning note, and previously undocumented Settings/Debug tabs
+
 ## [0.1.2] - 2026-07-05
 
 ### Added
