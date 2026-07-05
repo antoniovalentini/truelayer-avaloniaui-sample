@@ -14,6 +14,11 @@ internal sealed class OtelDiagnosticsListener(IDebugTelemetryStatus telemetrySta
 
     protected override void OnEventWritten(EventWrittenEventArgs e)
     {
+        // OTel sources are enabled at Verbose, which is very chatty — only care about export
+        // success/failure here, so skip formatting/console output for everything else.
+        if (e.EventName is not ("ExportSuccess" or "ExportFailure"))
+            return;
+
         string msg;
         try
         {

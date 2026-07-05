@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -28,10 +29,15 @@ public sealed class DebugHttpLoggingHandler(IDebugStore<DebugNetworkEntry> store
             if (!response.IsSuccessStatusCode)
             {
                 // Buffer the content so both this handler and the real caller (TrueLayer's ApiClient)
-                // can read the body — an unbuffered stream can only be read once.
+                // can read the body — an unbuffered stream can only be read once. Only decode a
+                // capped snippet here so a large error body doesn't get materialized as a full string
+                // just to be truncated.
                 await response.Content.LoadIntoBufferAsync();
-                var body = await response.Content.ReadAsStringAsync(cancellationToken);
-                error = body.Length > MaxErrorSnippetLength ? body[..MaxErrorSnippetLength] : body;
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                using var reader = new StreamReader(stream);
+                var buffer = new char[MaxErrorSnippetLength];
+                var read = await reader.ReadBlockAsync(buffer, cancellationToken);
+                error = new string(buffer, 0, read);
             }
 
             var traceId = response.Headers.TryGetValues(TraceIdHeader, out var values) ? values.FirstOrDefault() : null;

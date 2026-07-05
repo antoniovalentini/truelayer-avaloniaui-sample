@@ -99,7 +99,7 @@ public class MainActivity : AvaloniaMainActivity
                 queryParams[param] = value;
             }
 
-        logger.LogInformation("Received redirect callback with {ParamCount} query parameters: {Uri}", queryParams.Count, uri);
+        logger.LogInformation("Received redirect callback with {ParamCount} query parameters", queryParams.Count);
         var messenger = App.Instance.Services.GetRequiredService<IMessenger>();
         messenger.Send(new CallbackReceivedMessage(new CallbackReceivedEventArgs(queryParams)));
     }
