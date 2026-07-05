@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2] - 2026-07-05
+
+### Added
+
+- New in-app "Debug" tab (Desktop + Android): log viewer with search/level/auth-only filters and crash capture, network call inspector, token inspector with masked/reveal-on-tap values, device info panel, and OpenTelemetry export status — all backed by fixed-capacity in-memory ring buffers, no persistence or remote shipping
+- Storage inspector listing the app's managed files with size/last-modified metadata and a masked JSON content preview
+- "Share diagnostics" action bundling logs/network/device/telemetry state into a single text export (tokens/secrets always excluded), via native share on Android and a file save on Desktop
+
 ## [0.1.1] - 2026-07-04
 
 ### Changed
