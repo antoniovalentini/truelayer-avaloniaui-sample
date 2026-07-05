@@ -71,6 +71,14 @@ public class AuthTokenStorage(ILogger<AuthTokenStorage> logger) : IAuthTokenStor
         {
             var filePath = Path.Combine(BasePath, fileName);
             logger.LogInformation("Loading blob from {FolderPath}", filePath);
+
+            // TODO: this is to avoid an exception if the beneficiaries files was never created, find a better way to do it
+            if (fileName == "beneficiaries.json" && !File.Exists(filePath))
+            {
+                await File.WriteAllTextAsync(filePath, "[]").ConfigureAwait(false);
+                logger.LogInformation("Created empty beneficiaries file at {FolderPath}", filePath);
+            }
+
             var data = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(data, _jsonSerializerOptions);
         }
