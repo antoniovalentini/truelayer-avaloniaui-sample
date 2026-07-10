@@ -9,6 +9,10 @@
     <Setter Property="Background" Value="#7392f9"/>
   </Style>
 
+  <Style Selector="Button">
+    <Setter Property="Cursor" Value="Hand"/>
+  </Style>
+
   <!-- Same "accent-hover" class, applied to CheckBox text color instead of Button background. -->
   <Style Selector="CheckBox.accent-hover:pointerover /template/ ContentPresenter,
                    .accent-hover CheckBox:pointerover /template/ ContentPresenter">
