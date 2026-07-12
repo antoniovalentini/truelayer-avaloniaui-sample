@@ -111,24 +111,26 @@
       <ItemsControl IsVisible="{Binding !Loading}" ItemsSource="{Binding Balances}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">
-              <StackPanel Spacing="12">
-                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
-                  <!-- Logo -->
-                  <Border Grid.RowSpan="2" Width="64" Height="64" BorderBrush="LightGray" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
-                    <Border.Background>
-                      <ImageBrush Source="{Binding IconSource}" Stretch="UniformToFill"/>
-                    </Border.Background>
-                  </Border>
+            <Button Click="OnBalanceCardClick" Background="Transparent" BorderThickness="0" CornerRadius="10" Padding="0" HorizontalContentAlignment="Stretch">
+              <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">
+                <StackPanel Spacing="12">
+                  <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
+                    <!-- Logo -->
+                    <Border Grid.RowSpan="2" Width="64" Height="64" BorderBrush="LightGray" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
+                      <Border.Background>
+                        <ImageBrush Source="{Binding IconSource}" Stretch="UniformToFill"/>
+                      </Border.Background>
+                    </Border>
 
-                  <!-- Account Info Section -->
-                  <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AvailableAmount}" HorizontalAlignment="Right"
-                             FontWeight="Bold" FontSize="22" Foreground="{DynamicResource Charcoal}"/>
-                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Iban}"
-                             HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                </Grid>
-              </StackPanel>
-            </Border>
+                    <!-- Account Info Section -->
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AvailableAmount}" HorizontalAlignment="Right"
+                               FontWeight="Bold" FontSize="22" Foreground="{DynamicResource Charcoal}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Iban}"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </Button>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
