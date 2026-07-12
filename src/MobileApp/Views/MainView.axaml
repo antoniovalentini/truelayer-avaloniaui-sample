@@ -12,11 +12,12 @@
     <design:DesignMainViewModel />
   </Design.DataContext>
 
-  <ContentPage Header="Data" Content="{Binding DataViewModel}">
-    <ContentPage.Icon>
+  <NavigationPage Header="Data">
+    <NavigationPage.Icon>
       <PathIcon Data="{DynamicResource BuildingBankRegular}"/>
-    </ContentPage.Icon>
-  </ContentPage>
+    </NavigationPage.Icon>
+    <ContentPage Header="Balances" NavigationPage.HasNavigationBar="False" Content="{Binding DataViewModel}"/>
+  </NavigationPage>
   <ContentPage Header="Payments" Content="{Binding PaymentViewModel}">
     <ContentPage.Icon>
       <PathIcon Data="{DynamicResource PaymentRegular}"/>
