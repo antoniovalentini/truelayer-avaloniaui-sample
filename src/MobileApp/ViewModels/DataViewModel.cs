@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -80,7 +81,6 @@ public partial class DataViewModel : ViewModelBase
 
             _logger.LogInformation("Removing token for tokens list: {ProviderId}", message.ProviderId);
             Tokens.Remove(token);
-            _ = GetAccountsAsync();
         });
 
         messenger.Register<DataViewModel, SettingsRestoredMessage>(this, (_, _) =>
@@ -147,9 +147,11 @@ public partial class DataViewModel : ViewModelBase
             return;
         }
 
-        await AddTokenAsync(response.Data);
-
-        _ = GetAccountsCommand.ExecuteAsync(null);
+        var token = await AddTokenAsync(response.Data);
+        if (token is not null)
+        {
+            _ = GetAccountsAsync(token);
+        }
     }
 
     [ObservableProperty] private bool _loading;
@@ -163,11 +165,11 @@ public partial class DataViewModel : ViewModelBase
         Loading = true;
         try
         {
-            var responses = new List<ExchangeCodeResponse>();
-            var invalidTokens = new List<OAuthToken>();
+            var responses = new ConcurrentBag<ExchangeCodeResponse>();
+            var invalidTokens = new ConcurrentBag<OAuthToken>();
             // snapshot the list before iterating
             // so the enumerator is over a private copy and mutations to Tokens mid-await cannot affect it.
-            foreach (var oAuthToken in Tokens.ToList())
+            await Task.WhenAll(Tokens.ToList().Select(async oAuthToken =>
             {
                 var response = await _tlClient.Auth.RefreshToken(oAuthToken.RefreshToken);
 
@@ -178,10 +180,8 @@ public partial class DataViewModel : ViewModelBase
                         : Helpers.ExtractErrors(response.Problem.Errors);
                     Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {errors} - {response.TraceId}");
                     _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, errors, response.TraceId);
-                    continue;
                 }
-
-                if (!response.IsSuccessful)
+                else if (!response.IsSuccessful)
                 {
                     var errors = response.Problem?.Errors is null
                         ? response.Problem?.Detail
@@ -189,10 +189,12 @@ public partial class DataViewModel : ViewModelBase
                     Errors.Add($"Error refreshing token for {oAuthToken.ProviderId}: {response.StatusCode} - {errors} - {response.TraceId}");
                     _logger.LogError("Error refreshing token for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, errors, response.TraceId);
                     invalidTokens.Add(oAuthToken);
-                    continue;
+                } else
+                {
+                    responses.Add(response.Data);
+                    await GetAccountsAsync(oAuthToken with { AccessToken = response.Data.AccessToken });
                 }
-                responses.Add(response.Data);
-            }
+            }));
 
             foreach (var invalidToken in invalidTokens)
             {
@@ -203,8 +205,6 @@ public partial class DataViewModel : ViewModelBase
             {
                 await AddTokenAsync(exchangeCodeResponse);
             }
-
-            await GetAccountsAsync();
         }
         finally
         {
@@ -212,12 +212,12 @@ public partial class DataViewModel : ViewModelBase
         }
     }
 
-    private async Task AddTokenAsync(ExchangeCodeResponse response)
+    private async Task<OAuthToken?> AddTokenAsync(ExchangeCodeResponse response)
     {
         if (new JwtSecurityTokenHandler().ReadToken(response.AccessToken) is not JwtSecurityToken jtw)
         {
             _logger.LogError("Invalid JWT token.");
-            return;
+            return null;
         }
 
         var providerId = jtw.Claims.FirstOrDefault(c => c.Type == "connector_id")?.Value ?? "unknown-provider";
@@ -233,15 +233,17 @@ public partial class DataViewModel : ViewModelBase
             _logger.LogInformation("Adding new token for provider: {ProviderId}", providerId);
         }
 
-        Tokens.Add(new OAuthToken(
+        var token = new OAuthToken(
             providerId,
             response.AccessToken,
             response.TokenType,
             response.ExpiresIn,
             response.RefreshToken,
-            DateTimeOffset.UtcNow));
+            DateTimeOffset.UtcNow);
+        Tokens.Add(token);
 
         await _tokenStorage.StoreTokens(Tokens.ToArray());
+        return token;
     }
 
     private bool HasAccessToken()
@@ -250,32 +252,26 @@ public partial class DataViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(HasAccessToken))]
-    private async Task GetAccountsAsync()
+    private async Task GetAccountsAsync(OAuthToken oAuthToken)
     {
-        Balances.Clear();
-        Loading = true;
-        await Task.WhenAll(Tokens.ToList().Select(async oAuthToken =>
+        var response = await _tlClient.Data.GetAccounts(oAuthToken.AccessToken);
+        if (!response.IsSuccessful)
         {
-            var response = await _tlClient.Data.GetAccounts(oAuthToken.AccessToken);
-            if (!response.IsSuccessful)
-            {
-                _logger.LogWarning("Error retrieving accounts for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, Helpers.ExtractErrors(response.Problem?.Errors), response.TraceId);
-                Errors.Add(response.StatusCode == HttpStatusCode.Unauthorized
-                    ? $"Error retrieving accounts for {oAuthToken.ProviderId}: {HttpStatusCode.Unauthorized}. Try refreshing the tokens - {response.TraceId}"
-                    : $"Error retrieving accounts for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
-                return;
-            }
+            _logger.LogWarning("Error retrieving accounts for {ProviderId}: {StatusCode} - {Errors} - {TraceId}", oAuthToken.ProviderId, response.StatusCode, Helpers.ExtractErrors(response.Problem?.Errors), response.TraceId);
+            Errors.Add(response.StatusCode == HttpStatusCode.Unauthorized
+                ? $"Error retrieving accounts for {oAuthToken.ProviderId}: {HttpStatusCode.Unauthorized}. Try refreshing the tokens - {response.TraceId}"
+                : $"Error retrieving accounts for {oAuthToken.ProviderId}: {response.StatusCode} - {Helpers.ExtractErrors(response.Problem?.Errors)} - {response.TraceId}");
+            return;
+        }
 
-            _logger.LogInformation("Accounts retrieved successfully.");
-            var accounts = response.Data?.Results ?? [];
-            foreach (var account in accounts)
-            {
-                _logger.LogInformation("Account ID: {AccountId}, Type: {AccountType}, Currency: {Currency}", account.AccountId, account.AccountType, account.Currency);
-            }
-            await Task.WhenAll(accounts.Select(account =>
-                GetAccountBalanceAsync(account.AccountId, account.AccountNumber.Iban, account.Provider.ProviderId, oAuthToken.AccessToken)));
-        }));
-        Loading = false;
+        _logger.LogInformation("Accounts retrieved successfully.");
+        var accounts = response.Data?.Results ?? [];
+        foreach (var account in accounts)
+        {
+            _logger.LogInformation("Account ID: {AccountId}, Type: {AccountType}, Currency: {Currency}", account.AccountId, account.AccountType, account.Currency);
+        }
+        await Task.WhenAll(accounts.Select(account =>
+            GetAccountBalanceAsync(account.AccountId, account.AccountNumber.Iban, account.Provider.ProviderId, oAuthToken.AccessToken)));
     }
 
     private static readonly Bitmap DefaultBankLogo = new(AssetLoader.Open(new Uri("avares://MobileApp/Assets/default-bank-logo.jpg")));
