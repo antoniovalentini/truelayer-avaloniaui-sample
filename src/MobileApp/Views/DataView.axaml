@@ -111,7 +111,7 @@
       <ItemsControl IsVisible="{Binding !Loading}" ItemsSource="{Binding Balances}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <Button Click="OnBalanceCardClick" Background="Transparent" BorderThickness="0" CornerRadius="10" Padding="0" HorizontalContentAlignment="Stretch">
+            <Button Click="OnBalanceCardClick" Background="Transparent" BorderThickness="0" CornerRadius="10" Padding="0" HorizontalAlignment="Stretch">
               <Border Background="{DynamicResource PureWhite}" CornerRadius="10" Margin="0 0 0 15" Padding="15">
                 <StackPanel Spacing="12">
                   <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
