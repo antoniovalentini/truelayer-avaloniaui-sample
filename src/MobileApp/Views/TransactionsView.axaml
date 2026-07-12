@@ -7,12 +7,12 @@
              Header="Transactions"
              x:Class="MobileApp.Views.TransactionsView"
              x:DataType="vm:TransactionsViewModel"
-             Background="{DynamicResource Charcoal}">
+             Background="{StaticResource Charcoal}">
   <StackPanel Margin="20" Spacing="10">
-    <TextBlock Text="{Binding Iban}" FontSize="18" FontWeight="DemiBold" Foreground="{DynamicResource PureWhite}"/>
-    <TextBlock Text="{Binding AvailableAmount}" FontWeight="Bold" FontSize="22" Foreground="{DynamicResource PureWhite}"/>
-    <TextBlock Text="{Binding CurrentAmount}" Foreground="{DynamicResource PureWhite}"/>
-    <TextBlock Text="{Binding Overdraft}" Foreground="{DynamicResource PureWhite}"/>
-    <TextBlock Text="Transaction history coming soon." Foreground="{DynamicResource PureWhite}" Margin="0 20 0 0"/>
+    <TextBlock Text="{Binding Iban}" FontSize="18" FontWeight="DemiBold" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding AvailableAmount}" FontWeight="Bold" FontSize="22" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding CurrentAmount}" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding Overdraft}" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="Transaction history coming soon." Foreground="{StaticResource PureWhite}" Margin="0 20 0 0"/>
   </StackPanel>
 </ContentPage>
