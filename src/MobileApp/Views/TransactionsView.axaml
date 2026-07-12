@@ -1,0 +1,18 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MobileApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="540" d:DesignHeight="960"
+             Header="Transactions"
+             x:Class="MobileApp.Views.TransactionsView"
+             x:DataType="vm:TransactionsViewModel"
+             Background="{StaticResource Charcoal}">
+  <StackPanel Margin="20" Spacing="10">
+    <TextBlock Text="{Binding Iban}" FontSize="18" FontWeight="DemiBold" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding AvailableAmount}" FontWeight="Bold" FontSize="22" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding CurrentAmount}" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="{Binding Overdraft}" Foreground="{StaticResource PureWhite}"/>
+    <TextBlock Text="Transaction history coming soon." Foreground="{StaticResource PureWhite}" Margin="0 20 0 0"/>
+  </StackPanel>
+</ContentPage>
